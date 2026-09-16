@@ -5,46 +5,60 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>The Magic Of Animation Presentation In Colorful Handdrawn Style</title>
 <style>
-	* {
-		box-sizing: border-box;
+ * {
+      box-sizing: border-box;
 	}
-/* pdf2html base stylesheet — fixed-layout, faithful page reproduction. */
-html, body { margin: 0; 
-	padding: 0;
-    height: 100dvh;
-	width: 100vw;
-	background-color: #111;
-    display: grid;
-    place-items: center; /* Centers the content both vertically and horizontally */
-    overflow: hidden;    /* Removes scrollbars */}
-body { background: #e8e8e8; }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100vw;
+      height: 100dvh;
+      overflow: hidden; /* Stops browser scrollbars entirely */
+      background-color: #e8e8e8;
+      
+      /* CSS Grid cleanly centers the scaled canvas in the viewport */
+      display: grid;
+      place-items: center; 
+    }
 
 .app-screen {
-    /* Tells the element to scale down or up to fit without stretching */
-    width: 1920px;
-	height: 1080px;
-	position: relative;
-	transform-origin: center center;
+    /* Define your native design canvas size here */
+    width: 1920px;   
+    height: 1080px;  
+      
+    /* Allows components inside to stretch naturally to design bounds */
     display: flex;
-	transform: scale(var(--zoom-factor, 1));
-	justify-content:  center;
-	align-items: center;
-    background-color: #333; /* Visual boundaries helper */
-	flex-shrink: 0;
+    justify-content: center;
+    align-items: center;
+    background-color: #333; 
+    
+    /* Use a CSS Variable updated live by JS to execute the scale.
+    transform-origin keeps the shrinking element dead-centered. */
+    transform: scale(var(--zoom-factor, 1));
+    transform-origin: center center;
+      
+    /* CRITICAL: Ensure this layout box doesn't collapse or pre-clip elements */
+    flex-shrink: 0;
 }
 /* One page = a positioning context sized to the PDF page box (CSS px). isolation:isolate makes it a
    stacking context so each page's per-element paint-order z-indexes stay self-contained (and the fixed
    sidebars keep sitting above every page's content, form fields included). */
 .page {
 	position: relative;
-	isolation: isolate;
-	margin: 0;
-	background: #fff;
-	box-shadow: 0 1px 4px rgba(0, 0, 0, .3);
-	overflow: hidden;
-
-	width: 800px;
-	height: 1000px;
+    isolation: isolate;
+      
+    /* Native sizing matching your print layout/PDF box */
+    width: 800px;    
+    height: 1000px; 
+      
+    background: #fff;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, .3);
+    
+    /* REMOVED: margin: 8px auto; -> Auto margins conflict with transform alignments */
+    margin: 0; 
+      
+    overflow: hidden; /* Keeps internal child designs neatly bounded */
 }
 
 /* The text-suppressed background raster (vectors + images), behind the text. */
