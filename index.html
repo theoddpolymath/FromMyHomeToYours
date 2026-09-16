@@ -294,9 +294,40 @@ html, body {
 <div class="t c1" style="z-index:223;transform:matrix(1,0,0,1,765.52,718.45)">Mula sa iyong Sinisinta</div>
 </p>
 <h2 style="display:contents">
-<div class="t c2" style="z-index:248;transform:matrix(1,0,0,1,906.14,946.29)">Next</div>
+<a><div class="t c2" style="z-index:248;transform:matrix(1,0,0,1,906.14,946.29)">Next</div></a>
 </h2>
 </div>
 </div>
+<script>
+    const canvas = document.getElementById("appScreen");
+    
+    // Must exactly mirror the native dimensions set in the CSS above
+    const nativeWidth = 1920; 
+    const nativeHeight = 1080;
+
+    function scaleCanvasToViewport() {
+      // 1. Get exact viewable viewport space (minus browser ribbons/taskbars)
+      const viewportWidth = window.innerWidth;
+      const viewportHeight = window.innerHeight;
+
+      // 2. Math calculation to get the maximum scaling limit without distortion
+      const scaleX = viewportWidth / nativeWidth;
+      const scaleY = viewportHeight / nativeHeight;
+      const idealScale = Math.min(scaleX, scaleY);
+
+      // 3. Calculate exact positioning offsets to center the scaled canvas perfectly
+      const offsetX = (viewportWidth - (nativeWidth * idealScale)) / 2;
+      const offsetY = (viewportHeight - (nativeHeight * idealScale)) / 2;
+
+      // 4. Inject variables right into CSS
+      canvas.style.setProperty('--zoom-factor', idealScale);
+      canvas.style.setProperty('--offset-x', `${offsetX}px`);
+      canvas.style.setProperty('--offset-y', `${offsetY}px`);
+    }
+
+    // Bind layout listeners for real-time recalculations
+    window.addEventListener("resize", scaleCanvasToViewport);
+    window.addEventListener("DOMContentLoaded", scaleCanvasToViewport);
+  </script>
 </body>
 </html>
