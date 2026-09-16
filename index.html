@@ -5,55 +5,53 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>The Magic Of Animation Presentation In Colorful Handdrawn Style</title>
 <style>
- * {
-      box-sizing: border-box;
-	}
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
-    html, body {
-      margin: 0;
-      padding: 0;
-      width: 100vw;
-      height: 100dvh;
-      overflow: hidden; /* Blocks browser scrollbars completely */
-      background-color: #e8e8e8;
-      position: relative; /* Acts as the absolute anchoring floor */
-    }
+/* 2. Setup the Screen Viewport Context */
+html, body {
+  width: 100vw;
+  height: 100dvh; /* Safely accounts for browser ribbons and taskbars */
+  overflow: hidden; /* Blocks all browser scrollbars completely */
+  background-color: #e8e8e8;
+  
+  /* Flexbox handles the centering math perfectly without JavaScript */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
-    /* The Viewport Canvas Wrapper */
-    .app-screen {
-      /* Define your native design layout size here */
-      width: 1920px;   
-      height: 1080px;  
-      
-      background-color: #333; 
-      position: absolute;
-      
-      /* FIXED: Shift origin to top-left so scaling math remains predictable */
-      transform-origin: top left;
-      
-      /* Visual scale value driven live by JS */
-      transform: scale(var(--zoom-factor, 1));
-      
-      /* Perfect horizontal and vertical offset positions computed by JS */
-      left: var(--offset-x, 0px);
-      top: var(--offset-y, 0px);
-      
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
+/* 3. The Responsive Master Container (16:9 Widescreen) */
+.app-screen {
+  /* Using vmin ensures it scales down fluidly on short or narrow screens */
+  width: 100vmin; 
+  height: 56.25vmin; /* Maintains 16:9 ratio exactly (100 * 9 / 16) */
+  
+  max-width: 100vw;
+  max-height: 100dvh;
+  
+  background-color: #333; /* Visual guide bounding box */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+}
 
-    /* Your Document Page Graphic */
-    .page {
-      position: relative;
-      isolation: isolate;
-      width: 800px;    
-      height: 1000px; 
-      background: #fff;
-      box-shadow: 0 1px 4px rgba(0, 0, 0, .3);
-      margin: 0; 
-      overflow: hidden; 
-    }
+/* 4. Your Document Page Graphic (Now also 1920x1080 native layout) */
+.page {
+  position: relative;
+  isolation: isolate;
+  background: #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, .15);
+  overflow: hidden; /* Bounds child elements within the 16:9 box */
+
+  /* Fill the 16:9 scaled canvas exactly */
+  width: 100%;
+  height: 100%;
+}
 /* The text-suppressed background raster (vectors + images), behind the text. */
 .bg {
 	position: absolute;
@@ -300,36 +298,5 @@
 </h2>
 </div>
 </div>
-<script>
-    const canvas = document.getElementById("appScreen");
-    
-    // Must exactly mirror the native dimensions set in the CSS above
-    const nativeWidth = 1920; 
-    const nativeHeight = 1080;
-
-    function scaleCanvasToViewport() {
-      // 1. Get exact viewable viewport space (minus browser ribbons/taskbars)
-      const viewportWidth = window.innerWidth;
-      const viewportHeight = window.innerHeight;
-
-      // 2. Math calculation to get the maximum scaling limit without distortion
-      const scaleX = viewportWidth / nativeWidth;
-      const scaleY = viewportHeight / nativeHeight;
-      const idealScale = Math.min(scaleX, scaleY);
-
-      // 3. Calculate exact positioning offsets to center the scaled canvas perfectly
-      const offsetX = (viewportWidth - (nativeWidth * idealScale)) / 2;
-      const offsetY = (viewportHeight - (nativeHeight * idealScale)) / 2;
-
-      // 4. Inject variables right into CSS
-      canvas.style.setProperty('--zoom-factor', idealScale);
-      canvas.style.setProperty('--offset-x', `${offsetX}px`);
-      canvas.style.setProperty('--offset-y', `${offsetY}px`);
-    }
-
-    // Bind layout listeners for real-time recalculations
-    window.addEventListener("resize", scaleCanvasToViewport);
-    window.addEventListener("DOMContentLoaded", scaleCanvasToViewport);
-  </script>
 </body>
 </html>
