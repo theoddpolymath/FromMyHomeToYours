@@ -5,52 +5,20 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>The Magic Of Animation Presentation In Colorful Handdrawn Style</title>
 <style>
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+/* pdf2html base stylesheet — fixed-layout, faithful page reproduction. */
+html, body { margin: 0; padding: 0; }
+body { background: #e8e8e8; }
 
-/* 2. Setup the Screen Viewport Context */
-html, body {
-  width: 100vw;
-  height: 100dvh; /* Safely accounts for browser ribbons and taskbars */
-  overflow: hidden; /* Blocks all browser scrollbars completely */
-  background-color: #e8e8e8;
-  
-  /* Flexbox handles the centering math perfectly without JavaScript */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-/* 3. The Responsive Master Container (16:9 Widescreen) */
-.app-screen {
-  /* Using vmin ensures it scales down fluidly on short or narrow screens */
-  width: 100vmin; 
-  height: 56.25vmin; /* Maintains 16:9 ratio exactly (100 * 9 / 16) */
-  
-  max-width: 100vw;
-  max-height: 100dvh;
-  
-  background-color: #333; /* Visual guide bounding box */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-shrink: 0;
-}
-
-/* 4. Your Document Page Graphic (Now also 1920x1080 native layout) */
+/* One page = a positioning context sized to the PDF page box (CSS px). isolation:isolate makes it a
+   stacking context so each page's per-element paint-order z-indexes stay self-contained (and the fixed
+   sidebars keep sitting above every page's content, form fields included). */
 .page {
-  position: relative;
-  isolation: isolate;
-  background: #fff;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, .15);
-  overflow: hidden; /* Bounds child elements within the 16:9 box */
-
-  /* Fill the 16:9 scaled canvas exactly */
-  width: 100%;
-  height: 100%;
+	position: relative;
+	isolation: isolate;
+	margin: 8px auto;
+	background: #fff;
+	box-shadow: 0 1px 4px rgba(0, 0, 0, .3);
+	overflow: hidden;
 }
 
 /* The text-suppressed background raster (vectors + images), behind the text. */
