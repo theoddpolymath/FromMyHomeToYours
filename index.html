@@ -296,28 +296,27 @@ body { background: #e8e8e8; }
 <script>
     const canvas = document.getElementById("appScreen");
     
-    // The exact native dimensions defined in your CSS above
-    const designWidth = 1920; 
-    const designHeight = 1080;
+    // Must exactly mirror the native dimensions set in the CSS above
+    const nativeWidth = 1920; 
+    const nativeHeight = 1080;
 
-    function fitToScreen() {
-      // Get exact window dimensions minus ribbons/taskbars
-      const windowWidth = window.innerWidth;
-      const windowHeight = window.innerHeight;
+    function scaleCanvasToViewport() {
+      // 1. Snag the precise viewable viewport window dimension (accounting for ribbon/taskbars)
+      const viewportWidth = window.innerWidth;
+      const viewportHeight = window.innerHeight;
 
-      // Determine the best scale ratio without stretching the graphics
-      const scaleX = viewportWidth / designnWidth;
-	  const scaleY = viewportHeight / designHeight;
-	  const idealScale = Math.min(scaleX, scaleY);
+      // 2. Math calculation to get the maximum scaling limit without stretching aspect ratios
+      const scaleX = viewportWidth / nativeWidth;
+      const scaleY = viewportHeight / nativeHeight;
+      const idealScale = Math.min(scaleX, scaleY);
 
-      // Apply the scale matrix uniformly
-	  canvas.style.setProperty('--zoom-factor', idealScale);
+      // 3. Inject the clean scale multiplier right into the CSS variable
+      canvas.style.setProperty('--zoom-factor', idealScale);
     }
 
-    // Run automatically on load and whenever the user resizes the window
-	window.addEventListener("resize", scaleCanvasToViewport);
+    // Bind layout listeners for real-time recalculations
+    window.addEventListener("resize", scaleCanvasToViewport);
     window.addEventListener("DOMContentLoaded", scaleCanvasToViewport);
-    fitToScreen();
   </script>
 </body>
 </html>
