@@ -169,5 +169,35 @@
 </svg>
 
 </div>
+ <script>
+    const canvas = document.getElementById("appScreen");
+    
+    const nativeWidth = 1920; 
+    const nativeHeight = 1080;
+
+    function forceFitScreen() {
+      // Get the true live window space minus OS and browser interfaces
+      const viewportWidth = window.innerWidth;
+      const viewportHeight = window.innerHeight;
+
+      // Determine standard aspect ratio downscaling factors
+      const scaleX = viewportWidth / nativeWidth;
+      const scaleY = viewportHeight / nativeHeight;
+      const idealScale = Math.min(scaleX, scaleY);
+
+      // Math coordinates to ensure equal spacing top/bottom and left/right
+      const offsetX = (viewportWidth - (nativeWidth * idealScale)) / 2;
+      const offsetY = (viewportHeight - (nativeHeight * idealScale)) / 2;
+
+      // Inject changes synchronously into the CSS DOM Tree
+      canvas.style.setProperty('--zoom-factor', idealScale);
+      canvas.style.setProperty('--offset-x', `${offsetX}px`);
+      canvas.style.setProperty('--offset-y', `${offsetY}px`);
+    }
+
+    // Recalculate instantly on startup and when screen layout alters
+    window.addEventListener("resize", forceFitScreen);
+    window.addEventListener("DOMContentLoaded", forceFitScreen);
+  </script>
 </body>
 </html>
