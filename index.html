@@ -1,53 +1,59 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>The Magic Of Animation Presentation In Colorful Handdrawn Style</title>
-<style>
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    /* 1. Global Reset */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-html, body {
-  width: 100vw;
-  height: 100dvh; 
-  overflow: hidden; 
-  background-color: #e8e8e8;
-  position: relative;
-}
+    /* 2. Lock the window boundary strictly */
+    html, body {
+      width: 100vw;
+      height: 100dvh; /* Accounts for ribbons and taskbars */
+      overflow: hidden; /* Eradicates all stray scrollbars */
+      background-color: #e8e8e8;
+      
+      /* Keeps the container centered on the desktop monitor */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
 
-.app-screen {
-  /* Hard locked to your native file dimensions */
-  width: 1920px;   
-  height: 1080px;  
-  background-color: #333; 
-  position: absolute;
-  
-  /* CRITICAL: Tells the CSS to actually use the JavaScript calculation values */
-  transform-origin: top left;
-  transform: scale(var(--zoom-factor, 1));
-  left: var(--offset-x, 0px);
-  top: var(--offset-y, 0px);
-  
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-shrink: 0;
-}
+    /* 3. The 16:9 Viewport Canvas */
+    .app-screen {
+      /* Hard-lock the design dimensions so inner coordinates do not warp */
+      width: 1920px;
+      height: 1080px;
+      background-color: #333;
+      
+      /* Shift transform pivot point to the absolute top-left */
+      transform-origin: top left;
+      
+      /* Scaled down uniformly via Javascript layout variables */
+      transform: scale(var(--zoom-factor, 1));
+      
+      /* Eliminates layout flexing engine clipping issues */
+      position: absolute; 
+      left: var(--offset-x, 0px);
+      top: var(--offset-y, 0px);
+    }
 
-.page {
-  position: relative;
-  isolation: isolate;
-  background: #fff;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, .15);
-  overflow: hidden; 
-  width: 100%;
-  height: 100%;
-}
-
+    /* 4. The Document Base */
+    .page {
+      position: relative;
+      isolation: isolate;
+      background: #fff;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, .15);
+      
+      /* Fills the 1920x1080 absolute canvas layer flawlessly */
+      width: 100%;
+      height: 100%;
+    }
 /* The text-suppressed background raster (vectors + images), behind the text. */
 .bg {
 	position: absolute;
@@ -294,36 +300,35 @@ html, body {
 </h2>
 </div>
 </div>
-<script>
+ <script>
     const canvas = document.getElementById("appScreen");
     
-    // Must exactly mirror the native dimensions set in the CSS above
     const nativeWidth = 1920; 
     const nativeHeight = 1080;
 
-    function scaleCanvasToViewport() {
-      // 1. Get exact viewable viewport space (minus browser ribbons/taskbars)
+    function forceFitScreen() {
+      // Get the true live window space minus OS and browser interfaces
       const viewportWidth = window.innerWidth;
       const viewportHeight = window.innerHeight;
 
-      // 2. Math calculation to get the maximum scaling limit without distortion
+      // Determine standard aspect ratio downscaling factors
       const scaleX = viewportWidth / nativeWidth;
       const scaleY = viewportHeight / nativeHeight;
       const idealScale = Math.min(scaleX, scaleY);
 
-      // 3. Calculate exact positioning offsets to center the scaled canvas perfectly
+      // Math coordinates to ensure equal spacing top/bottom and left/right
       const offsetX = (viewportWidth - (nativeWidth * idealScale)) / 2;
       const offsetY = (viewportHeight - (nativeHeight * idealScale)) / 2;
 
-      // 4. Inject variables right into CSS
+      // Inject changes synchronously into the CSS DOM Tree
       canvas.style.setProperty('--zoom-factor', idealScale);
       canvas.style.setProperty('--offset-x', `${offsetX}px`);
       canvas.style.setProperty('--offset-y', `${offsetY}px`);
     }
 
-    // Bind layout listeners for real-time recalculations
-    window.addEventListener("resize", scaleCanvasToViewport);
-    window.addEventListener("DOMContentLoaded", scaleCanvasToViewport);
+    // Recalculate instantly on startup and when screen layout alters
+    window.addEventListener("resize", forceFitScreen);
+    window.addEventListener("DOMContentLoaded", forceFitScreen);
   </script>
 </body>
 </html>
