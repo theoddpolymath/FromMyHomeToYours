@@ -14,53 +14,46 @@
       padding: 0;
       width: 100vw;
       height: 100dvh;
-      overflow: hidden; /* Stops browser scrollbars entirely */
+      overflow: hidden; /* Blocks browser scrollbars completely */
       background-color: #e8e8e8;
-      
-      /* CSS Grid cleanly centers the scaled canvas in the viewport */
-      display: grid;
-      place-items: center; 
+      position: relative; /* Acts as the absolute anchoring floor */
     }
 
-.app-screen {
-    /* Define your native design canvas size here */
-    width: 1920px;   
-    height: 1080px;  
+    /* The Viewport Canvas Wrapper */
+    .app-screen {
+      /* Define your native design layout size here */
+      width: 1920px;   
+      height: 1080px;  
       
-    /* Allows components inside to stretch naturally to design bounds */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: #333; 
-    
-    /* Use a CSS Variable updated live by JS to execute the scale.
-    transform-origin keeps the shrinking element dead-centered. */
-    transform: scale(var(--zoom-factor, 1));
-    transform-origin: center center;
+      background-color: #333; 
+      position: absolute;
       
-    /* CRITICAL: Ensure this layout box doesn't collapse or pre-clip elements */
-    flex-shrink: 0;
-}
-/* One page = a positioning context sized to the PDF page box (CSS px). isolation:isolate makes it a
-   stacking context so each page's per-element paint-order z-indexes stay self-contained (and the fixed
-   sidebars keep sitting above every page's content, form fields included). */
-.page {
-	position: relative;
-    isolation: isolate;
+      /* FIXED: Shift origin to top-left so scaling math remains predictable */
+      transform-origin: top left;
       
-    /* Native sizing matching your print layout/PDF box */
-    width: 800px;    
-    height: 1000px; 
+      /* Visual scale value driven live by JS */
+      transform: scale(var(--zoom-factor, 1));
       
-    background: #fff;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, .3);
-    
-    /* REMOVED: margin: 8px auto; -> Auto margins conflict with transform alignments */
-    margin: 0; 
+      /* Perfect horizontal and vertical offset positions computed by JS */
+      left: var(--offset-x, 0px);
+      top: var(--offset-y, 0px);
       
-    overflow: hidden; /* Keeps internal child designs neatly bounded */
-}
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
 
+    /* Your Document Page Graphic */
+    .page {
+      position: relative;
+      isolation: isolate;
+      width: 800px;    
+      height: 1000px; 
+      background: #fff;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, .3);
+      margin: 0; 
+      overflow: hidden; 
+    }
 /* The text-suppressed background raster (vectors + images), behind the text. */
 .bg {
 	position: absolute;
@@ -315,17 +308,23 @@
     const nativeHeight = 1080;
 
     function scaleCanvasToViewport() {
-      // 1. Snag the precise viewable viewport window dimension (accounting for ribbon/taskbars)
+      // 1. Get exact viewable viewport space (minus browser ribbons/taskbars)
       const viewportWidth = window.innerWidth;
       const viewportHeight = window.innerHeight;
 
-      // 2. Math calculation to get the maximum scaling limit without stretching aspect ratios
+      // 2. Math calculation to get the maximum scaling limit without distortion
       const scaleX = viewportWidth / nativeWidth;
       const scaleY = viewportHeight / nativeHeight;
       const idealScale = Math.min(scaleX, scaleY);
 
-      // 3. Inject the clean scale multiplier right into the CSS variable
+      // 3. Calculate exact positioning offsets to center the scaled canvas perfectly
+      const offsetX = (viewportWidth - (nativeWidth * idealScale)) / 2;
+      const offsetY = (viewportHeight - (nativeHeight * idealScale)) / 2;
+
+      // 4. Inject variables right into CSS
       canvas.style.setProperty('--zoom-factor', idealScale);
+      canvas.style.setProperty('--offset-x', `${offsetX}px`);
+      canvas.style.setProperty('--offset-y', `${offsetY}px`);
     }
 
     // Bind layout listeners for real-time recalculations
