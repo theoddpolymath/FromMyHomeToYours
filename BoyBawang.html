@@ -4,13 +4,62 @@
 <title>Chips | Boy Bawang</title>
 <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
 <style>
-body {padding:0; margin:0; text-align:center; background-color:#777}
-.page {margin:5px 0}
+/* 1. Global Reset */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* 2. Lock the window boundary strictly */
+    html, body {
+      width: 100vw;
+      height: 100dvh; /* Accounts for ribbons and taskbars */
+      overflow: hidden; /* Eradicates all stray scrollbars */
+      background-color: #e8e8e8;
+      
+      /* Keeps the container centered on the desktop monitor */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* 3. The 16:9 Viewport Canvas */
+    .app-screen {
+      /* Hard-lock the design dimensions so inner coordinates do not warp */
+      width: 1920px;
+      height: 1080px;
+      background-color: #333;
+      
+      /* Shift transform pivot point to the absolute top-left */
+      transform-origin: top left;
+      
+      /* Scaled down uniformly via Javascript layout variables */
+      transform: scale(var(--zoom-factor, 1));
+      
+      /* Eliminates layout flexing engine clipping issues */
+      position: absolute; 
+      left: var(--offset-x, 0px);
+      top: var(--offset-y, 0px);
+    }
+
+    /* 4. The Document Base */
+    .page {
+      position: relative;
+      isolation: isolate;
+      background: #fff;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, .15);
+      
+      /* Fills the 1920x1080 absolute canvas layer flawlessly */
+      width: 100%;
+      height: 100%;
+    }
+
 .page svg {background-color:#fff}
 </style>
 </head>
 <body>
-
+<div class="app-screen" id="appScreen">
 <div class="page">
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
@@ -144,7 +193,37 @@ body {padding:0; margin:0; text-align:center; background-color:#777}
     </g>
   </g>
 </svg>
-
 </div>
+</div>
+ <script>
+    const canvas = document.getElementById("appScreen");
+    
+    const nativeWidth = 1920; 
+    const nativeHeight = 1080;
+
+    function forceFitScreen() {
+      // Get the true live window space minus OS and browser interfaces
+      const viewportWidth = window.innerWidth;
+      const viewportHeight = window.innerHeight;
+
+      // Determine standard aspect ratio downscaling factors
+      const scaleX = viewportWidth / nativeWidth;
+      const scaleY = viewportHeight / nativeHeight;
+      const idealScale = Math.min(scaleX, scaleY);
+
+      // Math coordinates to ensure equal spacing top/bottom and left/right
+      const offsetX = (viewportWidth - (nativeWidth * idealScale)) / 2;
+      const offsetY = (viewportHeight - (nativeHeight * idealScale)) / 2;
+
+      // Inject changes synchronously into the CSS DOM Tree
+      canvas.style.setProperty('--zoom-factor', idealScale);
+      canvas.style.setProperty('--offset-x', `${offsetX}px`);
+      canvas.style.setProperty('--offset-y', `${offsetY}px`);
+    }
+
+    // Recalculate instantly on startup and when screen layout alters
+    window.addEventListener("resize", forceFitScreen);
+    window.addEventListener("DOMContentLoaded", forceFitScreen);
+  </script>
 </body>
 </html>
