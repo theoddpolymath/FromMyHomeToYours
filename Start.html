@@ -202,5 +202,10 @@
     window.addEventListener("resize", forceFitScreen);
     window.addEventListener("DOMContentLoaded", forceFitScreen);
   </script>
+  <script>
+   document.addEventListener("click", function() {
+    window.parent.postMessage("user-interaction", "https://theoddpolymath.github.io");
+}, { once: true });
+</script>
 </body>
 </html>
