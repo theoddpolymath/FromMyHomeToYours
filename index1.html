@@ -196,6 +196,10 @@
 </style>
 </head>
 <body>
+    <audio loop>
+        <source src="resources/roa-music-walk-around(chosic.com).mp3" type="audio/mpeg">
+       Your browser does not support the audio content.
+    </audio>
     <div class="app-screen" id="appScreen">
         <div style="width: 100% ;height:100%; display:flex; justify-content: center; align-items: center; position: absolute;">
             <div class="login-overlay scaling" id="Overlay">
@@ -206,19 +210,11 @@
                     <h3>(in DDMMYYYY)?</h3>
                     <form id="loginForm" onsubmit="event.preventDefault(); verifyPassword();">
                         <input type="password" id="userPassword" class="input-field" placeholder="Enter Answer to Unlock..." required>
-                        <button type="submit" class="submit-btn" id="submit_button">S  U  B  M  I  T</button>
+                        <button type="submit" class="submit-btn">S  U  B  M  I  T</button>
                     </form>
                 </div>
             </div>
         </div>
-        <!-- 2. The Continuous Background Audio -->
-    <audio id="bg-music" loop>
-        <source src="resources/roa-music-walk-around(chosic.com).mp3" type="audio/mpeg">
-    </audio>
-
-    <!-- 3. The Window displaying your 25 static pages (Starts hidden) -->
-    <iframe id="site-content" src=""></iframe>
-
         <div class="page">
             <!-- Created with Inkscape (http://www.inkscape.org/) -->
             <svg
@@ -363,10 +359,7 @@
         function verifyPassword() {
             // Retrieve the value entered by the user
             var enteredPassword = document.getElementById("userPassword").value;
-            var passwordScreen = document.getElementById('Overlay');
-            var unlockBtn = document.getElementById('submit_button');
-            var music = document.getElementById('bg-music');
-            var iframe = document.getElementById('site-content');
+            
             // The correct password to check against
             var correctPassword = "55186078";
 
@@ -377,40 +370,15 @@
             // Simple validation logic
             if (enteredPassword === correctPassword) {
                 alert("YAYYY GOOD JOB BBY MWAAA!");
-                // 1. Play the music! (The browser allows this because she just clicked a button)
-                music.play().catch(err => console.log("Audio failed to play:", err));
-
-                // 2. Load the true first page into the iframe
-                iframe.src = "Start.html"; 
-                iframe.style.display = "block";
-
-                // 3. Hide the password overlay completely
-                passwordScreen.style.display = "none";
+                window.location.href="https://theoddpolymath.github.io/FromMyHomeToYours/Start.html"
             } else {
                 alert("OOP great try darling, but try again ! MWA");
-                enteredPassword.value = "";
             }
         }
-        submit_button.addEventListener('click', checkPassword);
-
-        // Also trigger unlock if she presses the "Enter" key on her keyboard
-        enteredPassword.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                verifyPassword();
-            }
-        });
         function scale_up() {
             document.getElementById('Overlay').classList.add("scaled");
         }
     </script>
-<script>
-    
-        // Trigger unlock on button cli
-    </script>
+
 </body>
 </html>
-
-
-
-
-
